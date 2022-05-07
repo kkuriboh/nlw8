@@ -26,11 +26,15 @@ export const FeedbackContentStep: React.FC<Props> = ({
 	const handleSubmitFeedback = async (event: FormEvent) => {
 		event.preventDefault()
 		setIsSendingFeedback(true)
-		await api.post('/feedbacks', {
-			type: feedbackType,
-			comment,
-			screenshot,
-		})
+		try {
+			await api.post('/feedbacks', {
+				type: feedbackType,
+				comment,
+				screenshot,
+			})
+		} catch (error) {
+			console.log(error)
+		}
 		setIsSendingFeedback(false)
 		onFeedbackSent()
 	}
