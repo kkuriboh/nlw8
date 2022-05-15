@@ -9,7 +9,7 @@ type SubmitFeedbackUseCaseRequest = {
 
 export class SubmitFeedbackUseCase {
 	constructor(
-		private feedbacsRepository: FeedbacksRepository,
+		private feedbacksRepository: FeedbacksRepository,
 		private mailAdapter: MailAdapter
 	) {}
 
@@ -21,7 +21,7 @@ export class SubmitFeedbackUseCase {
 		if (screenshot && !screenshot.startsWith('data:image/png;base64'))
 			throw new Error('Invalid screenshot format.')
 
-		await this.feedbacsRepository.create({
+		await this.feedbacksRepository.create({
 			type,
 			comment,
 			screenshot,
