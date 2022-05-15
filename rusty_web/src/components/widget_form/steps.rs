@@ -12,16 +12,46 @@ use crate::icons::ArrowLeft;
 
 use super::FeedbackType;
 
+#[derive(Properties, PartialEq)]
+pub struct TypeProps {
+    pub on_feedbacktype_change: Callback<FeedbackType>,
+}
+
 #[function_component(FeedbackTypeStep)]
-pub fn feedback_type_step() -> Html {
+pub fn feedback_type_step(props: &TypeProps) -> Html {
+    let on_feedbacktype_change = props.on_feedbacktype_change.clone();
 	html! {
-		<h1>{"Feedback Type"}</h1>
+        <>
+            <header>
+				<span class="text-xl leading-6">{"Deixe seu feedback"}</span>
+				<CloseButton />
+            </header>
+            <div class={"flex py-8 gap-2 w-full"}>
+                {
+                    for FeedbackType::iter().map(|feedback_type: FeedbackType| {
+                        let on_feedbacktype_change = on_feedbacktype_change.clone();
+                        let feedback_type_clone = feedback_type.clone();
+                        html! {
+                            <button
+                                key={feedback_type.title()}
+                                class={"bg-zinc-800 rounded-lg py-5 w-24 flex-1 flex flex-col items-center gap-2 border-2 border-transparent hover:border-brand-500 focus:border-brand-500 focus:outline-none"}
+                                type={"button"}
+                                onclick={move |_| on_feedbacktype_change.emit(feedback_type.clone())}
+                            >
+                                {feedback_type_clone.image("w-auto h-auto")}
+                                <span>{feedback_type_clone.title()}</span>
+                            </button>
+                        }
+                    })
+                }
+            </div>
+        </>
 	}
 }
 
 #[derive(Properties, PartialEq)]
 pub struct ContentProps {
-	pub feedback_type: FeedbackType,
+	pub feedback_type: Option<FeedbackType>,
 	pub on_feedback_restart_requested: Callback<()>,
 	pub on_feedback_sent: Callback<()>,
 }
@@ -57,7 +87,7 @@ pub fn feedback_content_step(props: &ContentProps) -> Html {
 					.as_ref()
 					.unwrap_or(&String::new())
 					.to_string(),
-				feedback_type,
+				feedback_type.unwrap(),
 				comment_handler.to_string(),
 			);
 			#[cfg(not(debug_assertions))]
@@ -77,8 +107,8 @@ pub fn feedback_content_step(props: &ContentProps) -> Html {
 					<ArrowLeft class={"w-4 h-4 stroke-zinc-400 group-hover:stroke-zinc-100"}/>
 				</button>
 				<span class={"text-xl leading-6 flex items-center gap-2"}>
-					{props.feedback_type.image()}
-					{props.feedback_type.title()}
+					{props.feedback_type.as_ref().unwrap().image("w-6 h-6")}
+					{props.feedback_type.as_ref().unwrap().title()}
 				</span>
 				<CloseButton />
 			</header>

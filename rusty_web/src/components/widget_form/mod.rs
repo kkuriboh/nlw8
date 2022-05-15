@@ -1,7 +1,6 @@
-use gloo::console::log;
 use serde::Serialize;
 use wasm_bindgen_futures::spawn_local;
-use yew::{function_component, html, use_state, Callback, Html, Properties, UseStateHandle};
+use yew::{function_component, html, use_state, Callback, Html, Properties, UseStateHandle, Children};
 
 use crate::icons::{Bug, Camera, CircleNotch, Idea, Thought, Trash};
 
@@ -19,17 +18,6 @@ pub enum FeedbackType {
 	Other,
 }
 
-/*impl ToString for FeedbackType {
-	fn to_string(&self) -> String {
-		match self {
-			FeedbackType::Bug => "Bug",
-			FeedbackType::Idea => "Idea",
-			FeedbackType::Other => "Other",
-		}
-		.to_string()
-	}
-}*/
-
 impl FeedbackType {
 	pub fn title(&self) -> &'static str {
 		match self {
@@ -38,32 +26,40 @@ impl FeedbackType {
 			FeedbackType::Other => "Outro",
 		}
 	}
-	pub fn image(&self) -> Html {
+	pub fn image(&self, class: &'static str) -> Html {
 		match self {
-			FeedbackType::Bug => html!(<Bug class={"w-6 h-6"} />),
-			FeedbackType::Idea => html!(<Idea class={"w-6 h-6"} />),
-			FeedbackType::Other => html!(<Thought class={"w-6 h-6"} />),
+			FeedbackType::Bug => html!(<Bug class={&*class} />),
+			FeedbackType::Idea => html!(<Idea class={&*class} />),
+			FeedbackType::Other => html!(<Thought class={&*class} />),
 		}
 	}
+    fn iter() -> impl Iterator<Item = FeedbackType> {
+        [FeedbackType::Bug, FeedbackType::Idea, FeedbackType::Other].iter().cloned()
+    }
 }
 
 #[function_component(WidgetForm)]
 pub fn widget_form() -> Html {
 	let feedback_type_state: UseStateHandle<Option<FeedbackType>> = use_state(|| None);
+    let type_clone = feedback_type_state.clone();
 	let feedback_sent_state = use_state(|| false);
 	let feedback_sent_state_clone = feedback_sent_state.clone();
-	let feedback_type = FeedbackType::Bug;
 
 	html! {
 		<div class={"bg-zinc-900 p-4 relative rounded-2xl mb-4 flex flex-col items-center shadow-lg w-[calc(100vw-2rem)] md:w-auto"}>
 			if *feedback_sent_state {
 				<FeedbackSuccessStep />
-			// TODO - change it to None later on
-			} else if let Some(_) = &*feedback_type_state {
-				<FeedbackTypeStep />
+			} else if let None = &*feedback_type_state {
+				<FeedbackTypeStep on_feedbacktype_change={Callback::from(move |feedback_type: FeedbackType| feedback_type_state.set(Some(feedback_type)))}/>
 			} else {
 				<FeedbackContentStep
-					feedback_type={feedback_type}
+					feedback_type={
+                        if let Some(feedback_type) = type_clone.as_ref() {
+                            Some(feedback_type.clone())
+                        } else {
+                            None
+                        }
+                    }
 					on_feedback_restart_requested={Callback::from(move |_| {
 						feedback_sent_state_clone.set(false);
 						feedback_type_state.set(None);
