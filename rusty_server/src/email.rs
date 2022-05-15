@@ -1,13 +1,14 @@
 use std::env;
 
 use lettre::{
-	message::header::ContentType, transport::smtp::authentication::Credentials, Message,
-	SmtpTransport, Transport,
+	message::header::ContentType,
+	transport::smtp::{authentication::Credentials, Error},
+	Message, SmtpTransport, Transport,
 };
 
 use crate::Feedback;
 
-pub fn send_mail(feedback: &Feedback) {
+pub fn send_mail(feedback: &Feedback) -> Result<(), Error> {
 	let email: String = env::var("EMAIL").unwrap();
 	let message = Message::builder()
 		.from(format!("Augusto <{}>", email).parse().unwrap())
@@ -40,7 +41,7 @@ pub fn send_mail(feedback: &Feedback) {
 		.build();
 
 	match mailer.send(&message) {
-		Ok(_) => println!("Email sent!"),
-		Err(e) => println!("Error: {e}"),
+		Ok(_) => Ok(()),
+		Err(e) => Err(e),
 	}
 }

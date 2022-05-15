@@ -15,20 +15,20 @@ extern "C" {
 
 #[derive(Serialize)]
 pub struct FeedbackRequest {
-	screenshot: String,
-	feedback_type: FeedbackType,
+	r#type: FeedbackType,
 	comment: String,
+	screenshot: Option<String>,
 }
 
 impl FeedbackRequest {
 	pub fn new(
-		screenshot: String,
-		feedback_type: FeedbackType,
+		screenshot: Option<String>,
+		r#type: FeedbackType,
 		comment: String,
 	) -> FeedbackRequest {
 		FeedbackRequest {
 			screenshot,
-			feedback_type,
+			r#type,
 			comment,
 		}
 	}

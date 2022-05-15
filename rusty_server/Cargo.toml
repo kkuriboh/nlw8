@@ -10,8 +10,12 @@ members = [".", "entity", "migration"]
 [dependencies]
 entity = { path = "entity" }
 migration = { path = "migration" }
+
 dotenv = "0.15.0"
-rocket = {version = "0.5.0-rc.1", features = ["json"]}
 serde = "1.0.137"
-sea-orm = { version = "^0", features = [ "sqlx-sqlite", "runtime-tokio-native-tls", "macros" ], default-features = false }
 lettre = "0.10.0-rc.6"
+
+actix-web = "4.0.1"
+actix-cors = "0.6.1"
+
+sea-orm = { version = "^0", features = [ "sqlx-sqlite", "sqlx-postgres", "runtime-actix-native-tls", "macros" ], default-features = false }

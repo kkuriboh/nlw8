@@ -14,38 +14,38 @@ use super::FeedbackType;
 
 #[derive(Properties, PartialEq)]
 pub struct TypeProps {
-    pub on_feedbacktype_change: Callback<FeedbackType>,
+	pub on_feedbacktype_change: Callback<FeedbackType>,
 }
 
 #[function_component(FeedbackTypeStep)]
 pub fn feedback_type_step(props: &TypeProps) -> Html {
-    let on_feedbacktype_change = props.on_feedbacktype_change.clone();
+	let on_feedbacktype_change = props.on_feedbacktype_change.clone();
 	html! {
-        <>
-            <header>
+		<>
+			<header>
 				<span class="text-xl leading-6">{"Deixe seu feedback"}</span>
 				<CloseButton />
-            </header>
-            <div class={"flex py-8 gap-2 w-full"}>
-                {
-                    for FeedbackType::iter().map(|feedback_type: FeedbackType| {
-                        let on_feedbacktype_change = on_feedbacktype_change.clone();
-                        let feedback_type_clone = feedback_type.clone();
-                        html! {
-                            <button
-                                key={feedback_type.title()}
-                                class={"bg-zinc-800 rounded-lg py-5 w-24 flex-1 flex flex-col items-center gap-2 border-2 border-transparent hover:border-brand-500 focus:border-brand-500 focus:outline-none"}
-                                type={"button"}
-                                onclick={move |_| on_feedbacktype_change.emit(feedback_type.clone())}
-                            >
-                                {feedback_type_clone.image("w-auto h-auto")}
-                                <span>{feedback_type_clone.title()}</span>
-                            </button>
-                        }
-                    })
-                }
-            </div>
-        </>
+			</header>
+			<div class={"flex py-8 gap-2 w-full"}>
+				{
+					for FeedbackType::iter().map(|feedback_type: FeedbackType| {
+						let on_feedbacktype_change = on_feedbacktype_change.clone();
+						let feedback_type_clone = feedback_type.clone();
+						html! {
+							<button
+								key={feedback_type.title()}
+								class={"bg-zinc-800 rounded-lg py-5 w-24 flex-1 flex flex-col items-center gap-2 border-2 border-transparent hover:border-brand-500 focus:border-brand-500 focus:outline-none"}
+								type={"button"}
+								onclick={move |_| on_feedbacktype_change.emit(feedback_type.clone())}
+							>
+								{feedback_type_clone.image("w-auto h-auto")}
+								<span>{feedback_type_clone.title()}</span>
+							</button>
+						}
+					})
+				}
+			</div>
+		</>
 	}
 }
 
@@ -59,7 +59,7 @@ pub struct ContentProps {
 #[function_component(FeedbackContentStep)]
 pub fn feedback_content_step(props: &ContentProps) -> Html {
 	let screenshot = use_state(|| Option::<String>::None);
-    let screenshot_clone = screenshot.clone();
+	let screenshot_clone = screenshot.clone();
 	let comment = use_state(|| String::new());
 	let comment_clone = comment.clone();
 	let is_sending = use_state(|| false);
@@ -83,15 +83,17 @@ pub fn feedback_content_step(props: &ContentProps) -> Html {
 		spawn_local(async move {
 			is_sending_handler.set(true);
 			let feedback = FeedbackRequest::new(
-				screenshot_handler
-					.as_ref()
-					.unwrap_or(&String::new())
-					.to_string(),
+				Some(
+					screenshot_handler
+						.as_ref()
+						.unwrap_or(&String::new())
+						.to_string(),
+				),
 				feedback_type.unwrap(),
 				comment_handler.to_string(),
 			);
 			#[cfg(not(debug_assertions))]
-			feedback.send(std::env!("API_URL")).await;
+			feedback.send(std::env!("API_URL").to_string()).await;
 			#[cfg(debug_assertions)]
 			feedback
 				.send("http://localhost:8000/feedbacks".to_string())
@@ -120,15 +122,15 @@ pub fn feedback_content_step(props: &ContentProps) -> Html {
 				/>
 				<footer class={"flex gap-2 mt-2"}>
 					<ScreenshotButton
-                        screenshot={
-                            if let Some(screenshot) = screenshot_clone.as_ref() {
-                                Some(screenshot.clone())
-                            } else {
-                                None
-                            }
-                        }
-                        on_screenshot_taken={Callback::from(move |val: Option<String>| screenshot.set(val))}
-                    />
+						screenshot={
+							if let Some(screenshot) = screenshot_clone.as_ref() {
+								Some(screenshot.clone())
+							} else {
+								None
+							}
+						}
+						on_screenshot_taken={Callback::from(move |val: Option<String>| screenshot.set(val))}
+					/>
 					<button
 						type="submit"
 						disabled={comment_clone.len() == 0 || *is_sending}

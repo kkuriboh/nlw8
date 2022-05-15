@@ -1,6 +1,6 @@
 use serde::Serialize;
 use wasm_bindgen_futures::spawn_local;
-use yew::{function_component, html, use_state, Callback, Html, Properties, UseStateHandle, Children};
+use yew::{function_component, html, use_state, Callback, Html, Properties, UseStateHandle};
 
 use crate::icons::{Bug, Camera, CircleNotch, Idea, Thought, Trash};
 
