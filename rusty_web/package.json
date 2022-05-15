@@ -1,0 +1,13 @@
+{
+	"scripts": {
+		"watch_tailwind": "tailwindcss -c ./tailwind.config.js -o ./tailwind.css -w",
+		"build_tailwind": "NODE_ENV=production tailwindcss -c ./tailwind.config.js -o ./tailwind.css --minify"
+	},
+	"devDependencies": {
+		"@tailwindcss/forms": "^0.5.1",
+		"autoprefixer": "^10.4.7",
+		"postcss": "^8.4.13",
+		"tailwind-scrollbar": "^1.3.1",
+		"tailwindcss": "^3.0.24"
+	}
+}

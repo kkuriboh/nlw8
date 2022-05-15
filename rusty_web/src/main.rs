@@ -2,7 +2,9 @@ use app::App;
 
 mod app;
 mod components;
+mod icons;
 
 fn main() {
-    yew::start_app::<App>();
+	dotenv::dotenv().ok();
+	yew::start_app::<App>();
 }

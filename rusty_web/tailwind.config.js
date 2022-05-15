@@ -1,14 +1,11 @@
 module.exports = {
-    purge: {
-        mode: "all",
-        content: [
-            "./src/**/*.rs",
-            "./index.html",
-            "./src/**/*.html",
-            "./src/**/*.css",
-        ],
-    },
-    theme: {
+	content: [
+		'./src/**/*.rs',
+		'./index.html',
+		'./src/**/*.html',
+		'./src/**/*.css',
+	],
+	theme: {
 		extend: {
 			colors: {
 				brand: {
@@ -21,6 +18,5 @@ module.exports = {
 			},
 		},
 	},
-    variants: {},
-    plugins: [],
-};
+	plugins: [require('@tailwindcss/forms'), require('tailwind-scrollbar')],
+}
