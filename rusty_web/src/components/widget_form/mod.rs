@@ -45,10 +45,17 @@ pub fn widget_form() -> Html {
 	let feedback_sent_state = use_state(|| false);
 	let feedback_sent_state_clone = feedback_sent_state.clone();
 
+    let type_state = feedback_type_state.clone();
+    let sent_state = feedback_sent_state.clone();
+    let handle_restart_feedback = move |_| {
+        type_state.set(None);
+        sent_state.set(false);
+    };
+
 	html! {
 		<div class={"bg-zinc-900 p-4 relative rounded-2xl mb-4 flex flex-col items-center shadow-lg w-[calc(100vw-2rem)] md:w-auto"}>
 			if *feedback_sent_state {
-				<FeedbackSuccessStep />
+				<FeedbackSuccessStep on_feedback_restart_requested={Callback::from(handle_restart_feedback)} />
 			} else if let None = &*feedback_type_state {
 				<FeedbackTypeStep on_feedbacktype_change={Callback::from(move |feedback_type: FeedbackType| feedback_type_state.set(Some(feedback_type)))}/>
 			} else {

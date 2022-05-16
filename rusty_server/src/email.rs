@@ -21,11 +21,7 @@ pub fn send_mail(feedback: &Feedback) -> Result<(), Error> {
 				"<div style=\"font-family: sans-serif; font-size: 16px; color: #111;\">",
 				format!("<p>Tipo do feedback{}</p>", feedback.r#type).as_str(),
 				format!("<p>Comentário: {}</p>", feedback.comment).as_str(),
-				format!(
-					"<img src=\"{}\" />",
-					feedback.screenshot.as_ref().unwrap_or(&"".to_string())
-				)
-				.as_str(),
+				format!("<img src=\"{}\" />", feedback.screenshot).as_str(),
 				"</div>",
 			]
 			.join(" ")

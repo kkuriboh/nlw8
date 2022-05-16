@@ -11,11 +11,11 @@ use serde::Deserialize;
 use email::send_mail;
 mod email;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 pub struct Feedback {
 	r#type: String,
 	comment: String,
-	screenshot: Option<String>,
+	screenshot: String,
 }
 
 #[post("/feedbacks")]
@@ -30,12 +30,8 @@ async fn create_feedback(feedback: web::Json<Feedback>) -> impl Responder {
 	if feedback.comment == "".to_string() {
 		panic!("Feedback comment is required");
 	}
-	if feedback.screenshot.is_none()
-		|| !feedback
-			.screenshot
-			.as_ref()
-			.unwrap()
-			.contains("data:image/png;base64")
+	if feedback.screenshot != "".to_string()
+		&& !feedback.screenshot.contains("data:image/png;base64")
 	{
 		panic!("Invalid feedback screenshot");
 	}
@@ -43,7 +39,7 @@ async fn create_feedback(feedback: web::Json<Feedback>) -> impl Responder {
 	let new_feedback = ActiveModel {
 		r#type: Set(feedback.r#type.to_owned()),
 		comment: Set(feedback.comment.to_owned()),
-		screenshot: Set(feedback.screenshot.to_owned()),
+		screenshot: Set(Some(feedback.screenshot.to_owned())),
 		..Default::default()
 	};
 

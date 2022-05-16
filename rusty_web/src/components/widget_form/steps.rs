@@ -3,12 +3,14 @@ use wasm_bindgen_futures::spawn_local;
 use web_sys::HtmlTextAreaElement;
 use yew::{function_component, html, html::onchange::Event, use_state, Callback, Properties};
 
-use crate::components::{
-	close_button::CloseButton,
-	widget_form::{Loading, ScreenshotButton},
-	FeedbackRequest,
+use crate::{
+	components::{
+		close_button::CloseButton,
+		widget_form::{Loading, ScreenshotButton},
+		FeedbackRequest,
+	},
+	icons::{ArrowLeft, Check},
 };
-use crate::icons::ArrowLeft;
 
 use super::FeedbackType;
 
@@ -71,6 +73,7 @@ pub fn feedback_content_step(props: &ContentProps) -> Html {
 	let screenshot_handler = screenshot.clone();
 	let is_sending_handler = is_sending.clone();
 	let feedback_type = props.feedback_type.clone();
+    let on_feedback_sent = props.on_feedback_sent.clone();
 	let handle_submit = move |e: html::onsubmit::Event| {
 		e.prevent_default();
 		if comment_handler.is_empty() && screenshot_handler.is_none() {
@@ -80,6 +83,7 @@ pub fn feedback_content_step(props: &ContentProps) -> Html {
 		let screenshot_handler = screenshot_handler.clone();
 		let comment_handler = comment_handler.clone();
 		let feedback_type = feedback_type.clone();
+        let on_feedback_sent = on_feedback_sent.clone();
 		spawn_local(async move {
 			is_sending_handler.set(true);
 			let feedback = FeedbackRequest::new(
@@ -99,6 +103,7 @@ pub fn feedback_content_step(props: &ContentProps) -> Html {
 				.send("http://localhost:8000/feedbacks".to_string())
 				.await;
 			is_sending_handler.set(false);
+            on_feedback_sent.emit(());
 		})
 	};
 
@@ -148,9 +153,30 @@ pub fn feedback_content_step(props: &ContentProps) -> Html {
 	}
 }
 
+#[derive(Properties, PartialEq)]
+pub struct SuccessProps {
+    pub on_feedback_restart_requested: Callback<()>,
+}
+
 #[function_component(FeedbackSuccessStep)]
-pub fn feedback_success_step() -> Html {
+pub fn feedback_success_step(props: &SuccessProps) -> Html {
+    let on_feedback_restart_requested = props.on_feedback_restart_requested.clone();
 	html! {
-		<h1>{"Feedback Success"}</h1>
+		<>
+			<header>
+				<CloseButton />
+			</header>
+			<div class={"flex flex-col items-center py-10 w-[304px]"}>
+				<Check />
+				<span class={"text-xl mt-2"}>{"Agradecemos o feedback!"}</span>
+                <button
+                    type={"button"}
+                    onclick={move |_| on_feedback_restart_requested.emit(())}
+                    class={"py-2 px-6 mt-6 bg-zinc-800 rounded-md border-transparent text-sm leading-6 hover:bg-zinc-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-900 focus:ring-brand-500"}
+                >
+                    {"Quero enviar outro"}
+                </button>
+			</div>
+		</>
 	}
 }

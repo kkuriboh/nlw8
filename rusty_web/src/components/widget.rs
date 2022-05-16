@@ -5,11 +5,11 @@ use crate::icons::ChatTeardropDots;
 
 #[function_component(Widget)]
 pub fn widget() -> Html {
-	let form_state = use_state(|| false);
+    let form_state = use_context::<UseStateHandle<bool>>().expect("no context found");
 	let form_state_copy = form_state.clone();
 
 	html! {
-		<div class={"absolute bottom-4 right-5 md:bottom-8 md:right-8 flex flex-col items-end"}>
+		<div id={"widget"} class={"absolute bottom-4 right-5 md:bottom-8 md:right-8 flex flex-col items-end"}>
 			if *form_state_copy {
 				<WidgetForm />
 			}
